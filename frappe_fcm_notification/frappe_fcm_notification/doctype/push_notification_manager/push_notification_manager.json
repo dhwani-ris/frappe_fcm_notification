@@ -1,0 +1,167 @@
+{
+	"actions": [
+		{
+			"action": "frappe_fcm_notification.events.push_notification_events.send_notification",
+			"condition": "doc.status == 'Draft'",
+			"group": "Actions",
+			"label": "Send Now",
+			"name": "send_now"
+		}
+	],
+	"allow_rename": 0,
+	"creation": "2024-01-01 00:00:00.000000",
+	"doctype": "DocType",
+	"engine": "InnoDB",
+	"field_order": [
+		"notification_title",
+		"notification_body",
+		"target_type",
+		"target_roles",
+		"target_users",
+		"custom_filter",
+		"notification_type",
+		"scheduled_datetime",
+		"status",
+		"sent_count",
+		"failed_count",
+		"created_by",
+		"sent_date",
+		"error_log"
+	],
+	"fields": [
+		{
+			"fieldname": "notification_title",
+			"fieldtype": "Data",
+			"label": "Notification Title",
+			"reqd": 1
+		},
+		{
+			"fieldname": "notification_body",
+			"fieldtype": "Text Editor",
+			"label": "Notification Body",
+			"reqd": 1
+		},
+		{
+			"fieldname": "target_type",
+			"fieldtype": "Select",
+			"label": "Target Type",
+			"options": "All Users\nBy Role\nSpecific Users\nCustom Filter",
+			"reqd": 1,
+			"default": "All Users"
+		},
+		{
+			"fieldname": "target_roles",
+			"fieldtype": "Table",
+			"label": "Target Roles",
+			"options": "Push Notification Target Role",
+			"depends_on": "eval:doc.target_type == 'By Role'"
+		},
+		{
+			"fieldname": "target_users",
+			"fieldtype": "Table",
+			"label": "Target Users",
+			"options": "Push Notification Target User",
+			"depends_on": "eval:doc.target_type == 'Specific Users'"
+		},
+		{
+			"fieldname": "custom_filter",
+			"fieldtype": "JSON",
+			"label": "Custom Filter",
+			"depends_on": "eval:doc.target_type == 'Custom Filter'"
+		},
+		{
+			"fieldname": "notification_type",
+			"fieldtype": "Select",
+			"label": "Notification Type",
+			"options": "Immediate\nScheduled",
+			"reqd": 1,
+			"default": "Immediate"
+		},
+		{
+			"fieldname": "scheduled_datetime",
+			"fieldtype": "Datetime",
+			"label": "Scheduled DateTime",
+			"depends_on": "eval:doc.notification_type == 'Scheduled'"
+		},
+		{
+			"fieldname": "status",
+			"fieldtype": "Select",
+			"label": "Status",
+			"options": "Draft\nScheduled\nSent\nFailed\nCancelled",
+			"default": "Draft",
+			"read_only": 1
+		},
+		{
+			"fieldname": "sent_count",
+			"fieldtype": "Int",
+			"label": "Sent Count",
+			"read_only": 1
+		},
+		{
+			"fieldname": "failed_count",
+			"fieldtype": "Int",
+			"label": "Failed Count",
+			"read_only": 1
+		},
+		{
+			"fieldname": "created_by",
+			"fieldtype": "Link",
+			"label": "Created By",
+			"options": "User",
+			"read_only": 1,
+			"default": "user"
+		},
+		{
+			"fieldname": "sent_date",
+			"fieldtype": "Datetime",
+			"label": "Sent Date",
+			"read_only": 1,
+			"default": "now"
+		},
+		{
+			"fieldname": "error_log",
+			"fieldtype": "Long Text",
+			"label": "Error Log",
+			"read_only": 1
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"links": [],
+	"modified": "2024-01-01 00:00:00.000000",
+	"modified_by": "Administrator",
+	"module": "Frappe FCM Notification",
+	"name": "Push Notification Manager",
+	"owner": "Administrator",
+	"permissions": [
+		{
+			"create": 1,
+			"delete": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "System Manager",
+			"share": 1,
+			"write": 1
+		},
+		{
+			"create": 1,
+			"delete": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "All",
+			"share": 1,
+			"write": 1
+		}
+	],
+	"sort_field": "modified",
+	"sort_order": "DESC",
+	"states": [],
+	"track_changes": 1,
+	"track_seen": 1,
+	"track_views": 1
+} 

@@ -1,0 +1,83 @@
+{
+	"actions": [],
+	"allow_rename": 0,
+	"issingle": 1,
+	"creation": "2024-01-01 00:00:00.000000",
+	"doctype": "DocType",
+	"engine": "InnoDB",
+	"field_order": [
+		"project_name",
+		"project_id",
+		"service_account_json",
+		"is_active",
+		"created_date",
+		"last_updated"
+	],
+	"fields": [
+		{
+			"fieldname": "project_name",
+			"fieldtype": "Data",
+			"label": "Project Name",
+			"reqd": 1
+		},
+		{
+			"fieldname": "project_id",
+			"fieldtype": "Data",
+			"label": "Project ID",
+			"reqd": 1
+		},
+		{
+			"fieldname": "service_account_json",
+			"fieldtype": "Attach",
+			"label": "Service Account JSON",
+			"reqd": 1
+		},
+		{
+			"default": 1,
+			"fieldname": "is_active",
+			"fieldtype": "Check",
+			"label": "Is Active"
+		},
+		{
+			"fieldname": "created_date",
+			"fieldtype": "Datetime",
+			"label": "Created Date",
+			"read_only": 1,
+			"default": "now"
+		},
+		{
+			"fieldname": "last_updated",
+			"fieldtype": "Datetime",
+			"label": "Last Updated",
+			"read_only": 1,
+			"default": "now"
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"links": [],
+	"modified": "2024-01-01 00:00:00.000000",
+	"modified_by": "Administrator",
+	"module": "Frappe FCM Notification",
+	"name": "Firebase Settings",
+	"owner": "Administrator",
+	"permissions": [
+		{
+			"create": 1,
+			"delete": 1,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "System Manager",
+			"share": 1,
+			"write": 1
+		}
+	],
+	"sort_field": "modified",
+	"sort_order": "DESC",
+	"states": [],
+	"track_changes": 1,
+	"track_seen": 1,
+	"track_views": 1
+} 

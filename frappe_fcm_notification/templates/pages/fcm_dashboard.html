@@ -1,0 +1,236 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("FCM Dashboard") }}{% endblock %}
+
+{% block page_content %}
+<div class="fcm-dashboard">
+	<div class="row">
+		<div class="col-md-12">
+			<h1 class="page-header">{{ _("FCM Dashboard") }}</h1>
+		</div>
+	</div>
+	
+	<!-- Statistics Cards -->
+	<div class="row">
+		<div class="col-md-3">
+			<div class="fcm-dashboard-widget">
+				<div class="fcm-stat-item success">
+					<div class="fcm-stat-number">{{ stats.sent_notifications }}</div>
+					<div class="fcm-stat-label">{{ _("Sent") }}</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="fcm-dashboard-widget">
+				<div class="fcm-stat-item danger">
+					<div class="fcm-stat-number">{{ stats.failed_notifications }}</div>
+					<div class="fcm-stat-label">{{ _("Failed") }}</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="fcm-dashboard-widget">
+				<div class="fcm-stat-item warning">
+					<div class="fcm-stat-number">{{ stats.scheduled_notifications }}</div>
+					<div class="fcm-stat-label">{{ _("Scheduled") }}</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="fcm-dashboard-widget">
+				<div class="fcm-stat-item">
+					<div class="fcm-stat-number">{{ stats.success_rate }}%</div>
+					<div class="fcm-stat-label">{{ _("Success Rate") }}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Firebase Status -->
+	<div class="row">
+		<div class="col-md-6">
+			<div class="fcm-dashboard-widget">
+				<h4>{{ _("Firebase Status") }}</h4>
+				<div class="row">
+					<div class="col-md-6">
+						<strong>{{ _("Status") }}:</strong>
+						{% if firebase_status.is_active %}
+							<span class="badge badge-success">{{ _("Active") }}</span>
+						{% else %}
+							<span class="badge badge-danger">{{ _("Inactive") }}</span>
+						{% endif %}
+					</div>
+					<div class="col-md-6">
+						<strong>{{ _("Project") }}:</strong>
+						{% if firebase_status.project_name %}
+							{{ firebase_status.project_name }}
+						{% else %}
+							{{ _("Not configured") }}
+						{% endif %}
+					</div>
+				</div>
+				<div class="row mt-3">
+					<div class="col-md-6">
+						<strong>{{ _("Credentials") }}:</strong>
+						{% if firebase_status.has_credentials %}
+							<span class="badge badge-success">{{ _("Uploaded") }}</span>
+						{% else %}
+							<span class="badge badge-warning">{{ _("Missing") }}</span>
+						{% endif %}
+					</div>
+					<div class="col-md-6">
+						<strong>{{ _("Active Tokens") }}:</strong>
+						{{ active_tokens }}
+					</div>
+				</div>
+				<div class="mt-3">
+					<a href="/app/firebase-settings" class="btn btn-primary btn-sm">
+						{{ _("Configure Firebase") }}
+					</a>
+				</div>
+			</div>
+		</div>
+		
+		<div class="col-md-6">
+			<div class="fcm-dashboard-widget">
+				<h4>{{ _("Quick Actions") }}</h4>
+				<div class="row">
+					<div class="col-md-6">
+						<a href="/app/push-notification-manager/new" class="btn btn-success btn-block mb-2">
+							{{ _("New Notification") }}
+						</a>
+					</div>
+					<div class="col-md-6">
+						<a href="/app/user-fcm-token/new" class="btn btn-info btn-block mb-2">
+							{{ _("Add Token") }}
+						</a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<a href="/app/push-notification-manager" class="btn btn-primary btn-block mb-2">
+							{{ _("View All") }}
+						</a>
+					</div>
+					<div class="col-md-6">
+						<a href="/app/user-fcm-token" class="btn btn-secondary btn-block mb-2">
+							{{ _("Manage Tokens") }}
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Recent Notifications -->
+	<div class="row">
+		<div class="col-md-12">
+			<div class="fcm-dashboard-widget">
+				<h4>{{ _("Recent Notifications") }}</h4>
+				{% if recent_notifications %}
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>{{ _("Title") }}</th>
+									<th>{{ _("Status") }}</th>
+									<th>{{ _("Sent") }}</th>
+									<th>{{ _("Failed") }}</th>
+									<th>{{ _("Created") }}</th>
+									<th>{{ _("Actions") }}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for notification in recent_notifications %}
+								<tr>
+									<td>
+										<a href="/app/push-notification-manager/{{ notification.name }}">
+											{{ notification.notification_title }}
+										</a>
+									</td>
+									<td>
+										<span class="status-indicator status-{{ notification.status.lower() }}"></span>
+										{{ notification.status }}
+									</td>
+									<td>{{ notification.sent_count or 0 }}</td>
+									<td>{{ notification.failed_count or 0 }}</td>
+									<td>{{ frappe.format_date(notification.created) }}</td>
+									<td>
+										{% if notification.status == 'Draft' %}
+											<button class="btn btn-sm btn-success fcm-send-notification" 
+													data-notification-id="{{ notification.name }}">
+												{{ _("Send") }}
+											</button>
+										{% elif notification.status == 'Failed' %}
+											<button class="btn btn-sm btn-warning fcm-retry-notification" 
+													data-notification-id="{{ notification.name }}">
+												{{ _("Retry") }}
+											</button>
+										{% elif notification.status == 'Scheduled' %}
+											<button class="btn btn-sm btn-danger fcm-cancel-notification" 
+													data-notification-id="{{ notification.name }}">
+												{{ _("Cancel") }}
+											</button>
+										{% endif %}
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				{% else %}
+					<p class="text-muted">{{ _("No notifications found") }}</p>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+.fcm-dashboard {
+	padding: 20px;
+}
+
+.page-header {
+	margin-bottom: 30px;
+	border-bottom: 2px solid #e1e1e1;
+	padding-bottom: 10px;
+}
+
+.badge {
+	font-size: 0.8em;
+}
+
+.btn-block {
+	width: 100%;
+}
+
+.table th {
+	background-color: #f8f9fa;
+	border-top: none;
+}
+
+.status-indicator {
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	margin-right: 8px;
+}
+
+.status-draft { background-color: #6c757d; }
+.status-scheduled { background-color: #ffc107; }
+.status-sent { background-color: #28a745; }
+.status-failed { background-color: #dc3545; }
+.status-cancelled { background-color: #6c757d; }
+</style>
+
+<script>
+$(document).ready(function() {
+	// Initialize FCM dashboard functionality
+	if (typeof FCMApp !== 'undefined') {
+		FCMApp.init();
+	}
+});
+</script>
+{% endblock %} 

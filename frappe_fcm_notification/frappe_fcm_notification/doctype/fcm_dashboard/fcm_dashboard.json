@@ -1,0 +1,33 @@
+{
+	"actions": [],
+	"allow_rename": 0,
+	"creation": "2024-01-01 00:00:00.000000",
+	"doctype": "Page",
+	"engine": "InnoDB",
+	"field_order": [],
+	"fields": [],
+	"index_web_pages_for_search": 1,
+	"links": [],
+	"modified": "2024-01-01 00:00:00.000000",
+	"modified_by": "Administrator",
+	"module": "Frappe FCM Notification",
+	"name": "FCM Dashboard",
+	"owner": "Administrator",
+	"page_name": "fcm-dashboard",
+	"roles": [
+		{
+			"role": "System Manager"
+		},
+		{
+			"role": "FCM Admin"
+		},
+		{
+			"role": "FCM Manager"
+		}
+	],
+	"script": "",
+	"standard": "No",
+	"style": "",
+	"system_page": 0,
+	"title": "FCM Dashboard"
+} 

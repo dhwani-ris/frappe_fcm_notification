@@ -11,26 +11,26 @@ app_license = "mit"
 # required_apps = []
 
 # Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "frappe_fcm_notification",
-# 		"logo": "/assets/frappe_fcm_notification/logo.png",
-# 		"title": "Frappe FCM Notification",
-# 		"route": "/frappe_fcm_notification",
-# 		"has_permission": "frappe_fcm_notification.api.permission.has_app_permission"
-# 	}
-# ]
+add_to_apps_screen = [
+	{
+		"name": "frappe_fcm_notification",
+		"logo": "/assets/frappe_fcm_notification/logo.png",
+		"title": "Frappe FCM Notification",
+		"route": "/frappe_fcm_notification",
+		"has_permission": "frappe_fcm_notification.frappe_fcm_notification.api.permission.has_app_permission"
+	}
+]
 
 # Includes in <head>
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/frappe_fcm_notification/css/frappe_fcm_notification.css"
-# app_include_js = "/assets/frappe_fcm_notification/js/frappe_fcm_notification.js"
+app_include_css = "/assets/frappe_fcm_notification/css/frappe_fcm_notification.css"
+app_include_js = "/assets/frappe_fcm_notification/js/frappe_fcm_notification.js"
 
 # include js, css files in header of web template
-# web_include_css = "/assets/frappe_fcm_notification/css/frappe_fcm_notification.css"
-# web_include_js = "/assets/frappe_fcm_notification/js/frappe_fcm_notification.js"
+web_include_css = "/assets/frappe_fcm_notification/css/frappe_fcm_notification.css"
+web_include_js = "/assets/frappe_fcm_notification/js/frappe_fcm_notification.js"
 
 # include custom scss in every website theme (without file extension ".scss")
 # website_theme_scss = "frappe_fcm_notification/public/scss/website"
@@ -43,10 +43,11 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
-# doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
-# doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
+doctype_js = {
+	"Firebase Settings": "public/js/firebase_settings.js",
+	"Push Notification Manager": "public/js/push_notification_manager.js",
+	"User FCM Token": "public/js/user_fcm_token.js"
+}
 
 # Svg Icons
 # ------------------
@@ -120,46 +121,57 @@ app_license = "mit"
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
-# has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
-# }
+permission_query_conditions = {
+	"Firebase Settings": "frappe_fcm_notification.frappe_fcm_notification.permissions.permissions.get_firebase_settings_permission_query_conditions",
+	"Push Notification Manager": "frappe_fcm_notification.frappe_fcm_notification.permissions.permissions.get_push_notification_permission_query_conditions",
+}
+
+has_permission = {
+	"Firebase Settings": "frappe_fcm_notification.frappe_fcm_notification.permissions.permissions.has_firebase_settings_permission",
+	"Push Notification Manager": "frappe_fcm_notification.frappe_fcm_notification.permissions.permissions.has_push_notification_permission",
+}
 
 # Document Events
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Push Notification Manager": {
+		"on_update": "frappe_fcm_notification.frappe_fcm_notification.events.push_notification_events.on_update",
+		"on_submit": "frappe_fcm_notification.frappe_fcm_notification.events.push_notification_events.on_submit",
+		"on_cancel": "frappe_fcm_notification.frappe_fcm_notification.events.push_notification_events.on_cancel",
+	},
+	"User FCM Token": {
+		"on_update": "frappe_fcm_notification.frappe_fcm_notification.events.user_fcm_token_events.on_update",
+		"on_trash": "frappe_fcm_notification.frappe_fcm_notification.events.user_fcm_token_events.on_trash",
+	},
+}
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"frappe_fcm_notification.tasks.all"
-# 	],
-# 	"daily": [
-# 		"frappe_fcm_notification.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"frappe_fcm_notification.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"frappe_fcm_notification.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"frappe_fcm_notification.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"all": [
+		"frappe_fcm_notification.frappe_fcm_notification.tasks.scheduled_tasks.all"
+	],
+	"daily": [
+		"frappe_fcm_notification.frappe_fcm_notification.tasks.scheduled_tasks.daily"
+	],
+	"hourly": [
+		"frappe_fcm_notification.frappe_fcm_notification.tasks.scheduled_tasks.hourly"
+	],
+	"cron": {
+		"*/5 * * * *": [
+			"frappe_fcm_notification.frappe_fcm_notification.tasks.scheduled_tasks.process_scheduled_notifications"
+		],
+		"0 2 * * *": [
+			"frappe_fcm_notification.frappe_fcm_notification.tasks.scheduled_tasks.cleanup_expired_tokens"
+		],
+		"*/15 * * * *": [
+			"frappe_fcm_notification.frappe_fcm_notification.tasks.scheduled_tasks.retry_failed_notifications"
+		],
+	},
+}
 
 # Testing
 # -------
@@ -202,26 +214,19 @@ app_license = "mit"
 # User Data Protection
 # --------------------
 
-# user_data_fields = [
-# 	{
-# 		"doctype": "{doctype_1}",
-# 		"filter_by": "{filter_by}",
-# 		"redact_fields": ["{field_1}", "{field_2}"],
-# 		"partial": 1,
-# 	},
-# 	{
-# 		"doctype": "{doctype_2}",
-# 		"filter_by": "{filter_by}",
-# 		"partial": 1,
-# 	},
-# 	{
-# 		"doctype": "{doctype_3}",
-# 		"strict": False,
-# 	},
-# 	{
-# 		"doctype": "{doctype_4}"
-# 	}
-# ]
+user_data_fields = [
+	{
+		"doctype": "User FCM Token",
+		"filter_by": "user",
+		"redact_fields": ["fcm_token"],
+		"partial": 1,
+	},
+	{
+		"doctype": "Push Notification Manager",
+		"filter_by": "created_by",
+		"partial": 1,
+	},
+]
 
 # Authentication and authorization
 # --------------------------------
@@ -236,4 +241,18 @@ app_license = "mit"
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
+
+# API Whitelist
+# -------------
+
+# Whitelist API methods
+override_whitelisted_methods = {
+	"frappe_fcm_notification.frappe_fcm_notification.api.fcm.save_fcm_token": "frappe_fcm_notification.frappe_fcm_notification.api.fcm.save_fcm_token",
+	"frappe_fcm_notification.frappe_fcm_notification.api.fcm.test_firebase_connection": "frappe_fcm_notification.frappe_fcm_notification.api.fcm.test_firebase_connection",
+	"frappe_fcm_notification.frappe_fcm_notification.api.fcm.send_test_notification": "frappe_fcm_notification.frappe_fcm_notification.api.fcm.send_test_notification",
+}
+
+# Startup hooks
+# -------------
+on_session_creation = "frappe_fcm_notification.frappe_fcm_notification.startup.startup.on_session_creation"
 

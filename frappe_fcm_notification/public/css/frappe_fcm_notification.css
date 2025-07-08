@@ -1,0 +1,272 @@
+/* Frappe FCM Notification CSS */
+
+/* Dashboard Widgets */
+.fcm-dashboard-widget {
+	background: #fff;
+	border: 1px solid #e1e1e1;
+	border-radius: 4px;
+	padding: 20px;
+	margin-bottom: 20px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.fcm-dashboard-widget h4 {
+	margin-top: 0;
+	color: #36414c;
+	font-weight: 600;
+}
+
+.fcm-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 15px;
+	margin-top: 15px;
+}
+
+.fcm-stat-item {
+	text-align: center;
+	padding: 15px;
+	background: #f8f9fa;
+	border-radius: 4px;
+	border-left: 4px solid #5e64ff;
+}
+
+.fcm-stat-item.success {
+	border-left-color: #28a745;
+}
+
+.fcm-stat-item.warning {
+	border-left-color: #ffc107;
+}
+
+.fcm-stat-item.danger {
+	border-left-color: #dc3545;
+}
+
+.fcm-stat-number {
+	font-size: 24px;
+	font-weight: bold;
+	color: #36414c;
+	margin-bottom: 5px;
+}
+
+.fcm-stat-label {
+	font-size: 12px;
+	color: #6c757d;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+/* Notification Form Enhancements */
+.notification-preview {
+	background: #f8f9fa;
+	border: 1px solid #e1e1e1;
+	border-radius: 4px;
+	padding: 15px;
+	margin-top: 10px;
+}
+
+.notification-preview h5 {
+	margin-top: 0;
+	color: #36414c;
+	font-weight: 600;
+}
+
+.notification-preview .preview-body {
+	color: #6c757d;
+	line-height: 1.5;
+}
+
+/* Target Selection Enhancements */
+.target-selection-help {
+	background: #e3f2fd;
+	border: 1px solid #2196f3;
+	border-radius: 4px;
+	padding: 10px;
+	margin-top: 10px;
+	font-size: 12px;
+	color: #1976d2;
+}
+
+/* Status Indicators */
+.status-indicator {
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	margin-right: 8px;
+}
+
+.status-draft {
+	background-color: #6c757d;
+}
+
+.status-scheduled {
+	background-color: #ffc107;
+}
+
+.status-sent {
+	background-color: #28a745;
+}
+
+.status-failed {
+	background-color: #dc3545;
+}
+
+.status-cancelled {
+	background-color: #6c757d;
+}
+
+/* Token Management */
+.token-list {
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.token-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+	border: 1px solid #e1e1e1;
+	border-radius: 4px;
+	margin-bottom: 10px;
+	background: #fff;
+}
+
+.token-info {
+	flex: 1;
+}
+
+.token-actions {
+	display: flex;
+	gap: 5px;
+}
+
+.token-token {
+	font-family: monospace;
+	font-size: 12px;
+	color: #6c757d;
+	word-break: break-all;
+}
+
+/* Firebase Settings */
+.firebase-test-section {
+	background: #f8f9fa;
+	border: 1px solid #e1e1e1;
+	border-radius: 4px;
+	padding: 20px;
+	margin-top: 20px;
+}
+
+.firebase-test-section h5 {
+	margin-top: 0;
+	color: #36414c;
+}
+
+.test-result {
+	padding: 10px;
+	border-radius: 4px;
+	margin-top: 10px;
+}
+
+.test-result.success {
+	background: #d4edda;
+	border: 1px solid #c3e6cb;
+	color: #155724;
+}
+
+.test-result.error {
+	background: #f8d7da;
+	border: 1px solid #f5c6cb;
+	color: #721c24;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.fcm-stats-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	
+	.token-item {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	
+	.token-actions {
+		margin-top: 10px;
+		width: 100%;
+		justify-content: flex-end;
+	}
+}
+
+/* Loading States */
+.fcm-loading {
+	text-align: center;
+	padding: 20px;
+	color: #6c757d;
+}
+
+.fcm-loading .spinner {
+	border: 2px solid #f3f3f3;
+	border-top: 2px solid #5e64ff;
+	border-radius: 50%;
+	width: 20px;
+	height: 20px;
+	animation: spin 1s linear infinite;
+	margin: 0 auto 10px;
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+/* Custom Buttons */
+.btn-fcm-primary {
+	background-color: #5e64ff;
+	border-color: #5e64ff;
+	color: white;
+}
+
+.btn-fcm-primary:hover {
+	background-color: #4a50e6;
+	border-color: #4a50e6;
+	color: white;
+}
+
+.btn-fcm-success {
+	background-color: #28a745;
+	border-color: #28a745;
+	color: white;
+}
+
+.btn-fcm-success:hover {
+	background-color: #218838;
+	border-color: #1e7e34;
+	color: white;
+}
+
+.btn-fcm-warning {
+	background-color: #ffc107;
+	border-color: #ffc107;
+	color: #212529;
+}
+
+.btn-fcm-warning:hover {
+	background-color: #e0a800;
+	border-color: #d39e00;
+	color: #212529;
+}
+
+.btn-fcm-danger {
+	background-color: #dc3545;
+	border-color: #dc3545;
+	color: white;
+}
+
+.btn-fcm-danger:hover {
+	background-color: #c82333;
+	border-color: #bd2130;
+	color: white;
+} 
