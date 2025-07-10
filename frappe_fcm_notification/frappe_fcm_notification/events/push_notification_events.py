@@ -49,7 +49,8 @@ def send_notification(doc):
 				body=doc.notification_body,
 				data={"name": doc.name,
 						"subject": doc.notification_title,
-						"message": doc.notification_body}
+						"message": doc.notification_body},
+				image_url=doc.image_url
 			)
 		else:
 			result = firebase_client.send_multicast_notification(
@@ -58,7 +59,8 @@ def send_notification(doc):
 				body=doc.notification_body,
 				data={"name": doc.name,
 						"subject": doc.notification_title,
-						"message": doc.notification_body}
+						"message": doc.notification_body},
+				image_url=doc.image_url
 			)
 		
 
