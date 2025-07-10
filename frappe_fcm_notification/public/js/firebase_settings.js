@@ -25,10 +25,11 @@ frappe.ui.form.on('Firebase Settings', {
 		// Add test notification button
 		frm.add_custom_button(__('Send Test Notification'), function() {
 			frappe.prompt({
-				fieldtype: 'Data',
+				fieldtype: 'Small Text',
 				label: __('FCM Token'),
 				description: __('Enter a valid FCM token to send a test notification'),
-				reqd: 1
+				reqd: 1,
+				fieldname: 'fcm_token'
 			}, function(values) {
 				frm.call({
 					method: 'send_test_notification',
@@ -41,6 +42,7 @@ frappe.ui.form.on('Firebase Settings', {
 								message: __('Test notification sent successfully!'),
 								indicator: 'green'
 							});
+							console.log("r", r)
 						} else {
 							frappe.show_alert({
 								message: __('Test notification failed: ') + (r.message ? r.message.error : 'Unknown error'),
@@ -49,7 +51,7 @@ frappe.ui.form.on('Firebase Settings', {
 						}
 					}
 				});
-			}, __('Send Test'), __('Cancel'));
+			}, __('Cancel'), __('Send Test'));
 		}, __('Actions'));
 	},
 

@@ -6,6 +6,10 @@ frappe.ui.form.on('User FCM Token', {
 		frm.add_custom_button(__('Refresh Token'), function() {
 			frm.call({
 				method: 'refresh_token',
+				args: {
+					doctype: frm.doc.doctype,
+					name: frm.doc.name
+				},
 				callback: function(r) {
 					if (r.exc) {
 						frappe.show_alert({
@@ -28,6 +32,10 @@ frappe.ui.form.on('User FCM Token', {
 			frm.add_custom_button(__('Deactivate'), function() {
 				frm.call({
 					method: 'deactivate_token',
+					args: {
+						doctype: frm.doc.doctype,
+						name: frm.doc.name
+					},
 					callback: function(r) {
 						if (r.exc) {
 							frappe.show_alert({
@@ -48,6 +56,10 @@ frappe.ui.form.on('User FCM Token', {
 			frm.add_custom_button(__('Activate'), function() {
 				frm.call({
 					method: 'activate_token',
+					args: {
+						doctype: frm.doc.doctype,
+						name: frm.doc.name
+					},
 					callback: function(r) {
 						if (r.exc) {
 							frappe.show_alert({
@@ -69,7 +81,7 @@ frappe.ui.form.on('User FCM Token', {
 		// Add test notification button
 		frm.add_custom_button(__('Send Test Notification'), function() {
 			frm.call({
-				method: 'frappe_fcm_notification.api.fcm.send_test_notification',
+				method: 'frappe_fcm_notification.frappe_fcm_notification.api.fcm.send_test_notification',
 				args: {
 					token: frm.doc.fcm_token
 				},

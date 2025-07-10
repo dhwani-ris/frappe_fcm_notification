@@ -13,7 +13,7 @@ class PushNotificationManager(Document):
 		self.validate_target_settings()
 	
 	def before_save(self):
-		"""Set created_by before saving"""
+		"""Set created_by before saving and populate target tables based on target type"""
 		if not self.created_by:
 			self.created_by = frappe.session.user
 	
@@ -41,26 +41,11 @@ class PushNotificationManager(Document):
 				frappe.throw(_("Please provide a custom filter"))
 	
 	@whitelist()
-	def send_notification(self):
-		"""Send the notification"""
-		from frappe_fcm_notification.frappe_fcm_notification.events.push_notification_events import send_notification
-		send_notification(self)
-	
-	@whitelist()
 	def get_target_users(self):
 		"""Get target users based on notification settings"""
 		from frappe_fcm_notification.frappe_fcm_notification.events.push_notification_events import get_target_users
 		return get_target_users(self)
 	
-	@whitelist()
-	def get_delivery_stats(self):
-		"""Get delivery statistics"""
-		return {
-			"sent_count": self.sent_count or 0,
-			"failed_count": self.failed_count or 0,
-			"total_count": (self.sent_count or 0) + (self.failed_count or 0),
-			"success_rate": self.get_success_rate()
-		}
 	
 	def get_success_rate(self):
 		"""Calculate success rate"""
@@ -68,23 +53,43 @@ class PushNotificationManager(Document):
 		if total == 0:
 			return 0
 		return round((self.sent_count or 0) / total * 100, 2)
-	
-	@whitelist()
-	def retry_failed_notification(self):
-		"""Retry sending failed notification"""
-		if self.status == "Failed":
-			self.status = "Draft"
-			self.error_log = ""
-			self.save()
-			self.send_notification()
-		else:
-			frappe.throw(_("Only failed notifications can be retried"))
-	
-	@whitelist()
-	def cancel_scheduled_notification(self):
-		"""Cancel scheduled notification"""
-		if self.status == "Scheduled":
-			self.status = "Cancelled"
-			self.save()
-		else:
-			frappe.throw(_("Only scheduled notifications can be cancelled")) 
+
+@whitelist()
+def send_notification(doctype, name):
+    doc = frappe.get_doc(doctype, name)
+    from frappe_fcm_notification.frappe_fcm_notification.events.push_notification_events import send_notification
+    send_notification(doc)
+
+@whitelist()
+def retry_failed_notification(doctype, name):
+	"""Retry sending failed notification"""
+	doc = frappe.get_doc(doctype, name)
+	if doc.status == "Failed":
+		doc.status = "Draft"
+		doc.error_log = ""
+		doc.save()
+		send_notification(doctype, name)
+	else:
+		frappe.throw(_("Only failed notifications can be retried"))
+
+@whitelist()
+def cancel_scheduled_notification(doctype, name):
+	doc = frappe.get_doc(doctype, name)
+	"""Cancel scheduled notification"""
+	if doc.status == "Scheduled":
+		doc.status = "Cancelled"
+		doc.save()
+	else:
+		frappe.throw(_("Only scheduled notifications can be cancelled")) 
+
+
+@whitelist()
+def get_delivery_stats(doctype, name):
+	doc = frappe.get_doc(doctype, name)
+	"""Get delivery statistics"""
+	return {
+		"sent_count": doc.sent_count or 0,
+		"failed_count": doc.failed_count or 0,
+		"total_count": (doc.sent_count or 0) + (doc.failed_count or 0),
+		"success_rate": doc.get_success_rate()
+	}
