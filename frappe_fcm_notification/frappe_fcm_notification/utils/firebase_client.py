@@ -113,6 +113,11 @@ class FirebaseClient:
 		"""Send notification to multiple devices"""
 		try:
 			message = messaging.MulticastMessage(
+				notification=messaging.Notification(
+					title=title,
+					body=body,
+					image=image_url
+				),
 				data=data or {},
 				tokens=tokens,
 			)
