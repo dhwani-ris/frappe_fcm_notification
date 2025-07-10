@@ -13,8 +13,8 @@ class FirebaseSettings(Document):
 		if self.service_account_json:
 			self.validate_service_account_json()
 		
-		if self.is_active:
-			self.validate_firebase_connection()
+		# if self.is_active:
+		# 	self.validate_firebase_connection()
 	
 	def before_save(self):
 		"""Set timestamps before saving"""
@@ -59,31 +59,6 @@ class FirebaseSettings(Document):
 			frappe.throw(_(f"Error testing Firebase connection: {str(e)}"))
 	
 	@whitelist()
-	def test_connection(self):
-		"""Test Firebase connection and return result"""
-		try:
-			from frappe_fcm_notification.frappe_fcm_notification.utils.firebase_client import get_firebase_client
-			result = get_firebase_client().test_connection()
-			return result
-		except Exception as e:
-			return {"success": False, "error": str(e)}
-	
-	@whitelist()
-	def send_test_notification(self, token):
-		"""Send test notification to validate setup"""
-		try:
-			from frappe_fcm_notification.frappe_fcm_notification.utils.firebase_client import get_firebase_client
-			result = get_firebase_client().send_single_notification(
-				token=token,
-				title="Test Notification",
-				body="This is a test notification from Firebase Settings",
-				data={"type": "test", "source": "firebase_settings"}
-			)
-			return result
-		except Exception as e:
-			return {"success": False, "error": str(e)}
-	
-	@whitelist()
 	def force_reinitialize(self):
 		"""Force re-initialization of Firebase client"""
 		try:
@@ -93,3 +68,29 @@ class FirebaseSettings(Document):
 			return result
 		except Exception as e:
 			return {"success": False, "error": str(e)} 
+		
+@whitelist(allow_guest=True)
+def send_test_notification(token):
+	"""Send test notification to validate setup"""
+	try:
+		from frappe_fcm_notification.frappe_fcm_notification.utils.firebase_client import get_firebase_client
+		result = get_firebase_client().send_single_notification(
+			token=token,
+			title="Test Notification",
+			body="This is a test notification from Firebase Settings",
+			data={"type": "test", "source": "firebase_settings"}
+		)
+		print("Sending Test Notification", result)
+		return result
+	except Exception as e:
+		return {"success": False, "error": str(e)}
+
+@whitelist(allow_guest=True)
+def test_connection():
+	"""Test Firebase connection and return result"""
+	try:
+		from frappe_fcm_notification.frappe_fcm_notification.utils.firebase_client import get_firebase_client
+		result = get_firebase_client().test_connection()
+		return result
+	except Exception as e:
+		return {"success": False, "error": str(e)}

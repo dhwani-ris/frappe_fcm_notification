@@ -36,20 +36,23 @@ class UserFCMToken(Document):
 		if not frappe.db.exists("User", self.user):
 			frappe.throw(_("User {0} does not exist").format(self.user))
 	
-	@whitelist()
-	def refresh_token(self):
-		"""Refresh the token timestamp"""
-		self.token_last_updated = now_datetime()
-		self.save()
-	
-	@whitelist()
-	def deactivate_token(self):
-		"""Deactivate the token"""
-		self.is_token_active = 0
-		self.save()
-	
-	@whitelist()
-	def activate_token(self):
-		"""Activate the token"""
-		self.is_token_active = 1
-		self.save() 
+@whitelist()
+def refresh_token(doctype, name):
+	"""Refresh the token timestamp"""
+	doc = frappe.get_doc(doctype, name)
+	doc.token_last_updated = now_datetime()
+	doc.save()
+
+@whitelist()
+def deactivate_token(doctype, name):
+	"""Deactivate the token"""
+	doc = frappe.get_doc(doctype, name)
+	doc.is_token_active = 0
+	doc.save()
+
+@whitelist()
+def activate_token(doctype, name):
+	"""Activate the token"""
+	doc = frappe.get_doc(doctype, name)
+	doc.is_token_active = 1
+	doc.save() 

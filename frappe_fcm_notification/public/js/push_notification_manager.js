@@ -7,6 +7,10 @@ frappe.ui.form.on('Push Notification Manager', {
 			frm.add_custom_button(__('Send Now'), function() {
 				frm.call({
 					method: 'send_notification',
+					args: {
+						doctype: frm.doc.doctype,
+						name: frm.doc.name
+					},
 					callback: function(r) {
 						if (r.exc) {
 							frappe.show_alert({
@@ -25,6 +29,10 @@ frappe.ui.form.on('Push Notification Manager', {
 			frm.add_custom_button(__('Retry'), function() {
 				frm.call({
 					method: 'retry_failed_notification',
+					args: {
+						doctype: frm.doc.doctype,
+						name: frm.doc.name
+					},
 					callback: function(r) {
 						if (r.exc) {
 							frappe.show_alert({
@@ -43,6 +51,10 @@ frappe.ui.form.on('Push Notification Manager', {
 			frm.add_custom_button(__('Cancel'), function() {
 				frm.call({
 					method: 'cancel_scheduled_notification',
+					args: {
+						doctype: frm.doc.doctype,
+						name: frm.doc.name
+					},
 					callback: function(r) {
 						if (r.exc) {
 							frappe.show_alert({
@@ -62,6 +74,10 @@ frappe.ui.form.on('Push Notification Manager', {
 			frm.add_custom_button(__('View Stats'), function() {
 				frm.call({
 					method: 'get_delivery_stats',
+					args: {
+						doctype: frm.doc.doctype,
+						name: frm.doc.name
+					},
 					callback: function(r) {
 						if (r.message) {
 							let stats = r.message;

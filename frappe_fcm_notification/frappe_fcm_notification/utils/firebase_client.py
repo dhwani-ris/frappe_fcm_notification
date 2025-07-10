@@ -43,7 +43,6 @@ class FirebaseClient:
 			if not os.path.exists(file_path):
 				logger.error(f"Service account JSON file not found at: {file_path}")
 				# Try alternative path construction
-				import frappe.utils
 				site_path = frappe.utils.get_site_path()
 				alternative_path = os.path.join(site_path, "public", "files", os.path.basename(firebase_settings.service_account_json))
 				logger.info(f"Trying alternative path: {alternative_path}")
@@ -123,7 +122,7 @@ class FirebaseClient:
 				tokens=tokens,
 			)
 			
-			response = messaging.send_multicast(message)
+			response = messaging.send_each_for_multicast(message)
 			
 			# Handle invalid tokens
 			if response.failure_count > 0:

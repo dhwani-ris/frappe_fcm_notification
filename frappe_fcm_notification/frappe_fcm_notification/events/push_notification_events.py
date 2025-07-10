@@ -47,16 +47,23 @@ def send_notification(doc):
 				token=tokens[0],
 				title=doc.notification_title,
 				body=doc.notification_body,
-				data={"notification_id": doc.name}
+				data={"name": doc.name,
+						"subject": doc.notification_title,
+						"message": doc.notification_body},
+				image_url=doc.image_url
 			)
 		else:
 			result = firebase_client.send_multicast_notification(
 				tokens=tokens,
 				title=doc.notification_title,
 				body=doc.notification_body,
-				data={"notification_id": doc.name}
+				data={"name": doc.name,
+						"subject": doc.notification_title,
+						"message": doc.notification_body},
+				image_url=doc.image_url
 			)
 		
+
 		# Update notification status
 		if result.get("success"):
 			doc.status = "Sent"
@@ -123,34 +130,23 @@ def get_fcm_tokens_for_users(users):
 def create_frappe_notification(doc, target_users, result):
 	"""Create Frappe notification record"""
 	try:
-		notification_doc = frappe.get_doc({
-			"doctype": "Notification",
-			"subject": doc.notification_title,
-			"type": "Alert",
-			"email_content": doc.notification_body,
-			"for_user": target_users[0] if len(target_users) == 1 else None,
-			"document_type": "Push Notification Manager",
-			"document_name": doc.name,
-			"read": 0,
-			"notification_type": "Push Notification"
-		})
-		notification_doc.insert()
-		
-		# For multiple users, create individual notifications
-		if len(target_users) > 1:
-			for user in target_users[1:]:
-				user_notification = frappe.get_doc({
-					"doctype": "Notification",
-					"subject": doc.notification_title,
-					"type": "Alert",
-					"email_content": doc.notification_body,
-					"for_user": user,
-					"document_type": "Push Notification Manager",
-					"document_name": doc.name,
-					"read": 0,
-					"notification_type": "Push Notification"
-				})
-				user_notification.insert()
+		for user in target_users:
+			# Create notification log entry directly in database
+			notification_log = frappe.get_doc({
+				"doctype": "Notification Log",
+				"subject": doc.notification_title,
+				"for_user": user,
+				"type": "Alert",
+				"email_content": doc.notification_body,
+				"document_type": "Push Notification Manager",
+				"document_name": doc.name,
+				"read": 0,
+				"from_user": doc.modified_by or doc.owner,
+			})
+			notification_log.insert(ignore_permissions=True)
+			
+			# Trigger realtime notification
+			frappe.publish_realtime("notification", after_commit=True, user=user)
 		
 		frappe.db.commit()
 		

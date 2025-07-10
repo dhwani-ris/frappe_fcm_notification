@@ -145,6 +145,9 @@ doc_events = {
 		"on_update": "frappe_fcm_notification.frappe_fcm_notification.events.user_fcm_token_events.on_update",
 		"on_trash": "frappe_fcm_notification.frappe_fcm_notification.events.user_fcm_token_events.on_trash",
 	},
+    "File": {
+        "validate": "frappe_fcm_notification.frappe_fcm_notification.events.file_events.validate",
+	}
 }
 
 # Scheduled Tasks
