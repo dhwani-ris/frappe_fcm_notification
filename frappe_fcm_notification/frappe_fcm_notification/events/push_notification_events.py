@@ -41,16 +41,23 @@ def send_notification(doc):
 		
 		# Send notification
 		firebase_client = get_firebase_client()
-		
+		notification_type = -1
+		if doc.notification_board_type == "Financial Board":
+			notification_type = 1
+		else:
+			notification_type = 2
 		if len(tokens) == 1:
+			
 			result = firebase_client.send_single_notification(
 				token=tokens[0],
 				title=doc.notification_title,
 				body=doc.notification_body,
 				data={"name": doc.name,
 						"subject": doc.notification_title,
-						"message": doc.notification_body},
-				image_url=doc.image_url
+						"message": doc.notification_body,
+						"type": str(notification_type)
+						},
+				image_url=doc.image_url,
 			)
 		else:
 			result = firebase_client.send_multicast_notification(
@@ -59,8 +66,10 @@ def send_notification(doc):
 				body=doc.notification_body,
 				data={"name": doc.name,
 						"subject": doc.notification_title,
-						"message": doc.notification_body},
-				image_url=doc.image_url
+						"message": doc.notification_body,
+						"type": str(notification_type)
+						},
+				image_url=doc.image_url,
 			)
 		
 
@@ -101,6 +110,18 @@ def get_target_users(doc):
 				pluck="parent"
 			))
 		users = list(set(role_users))  # Remove duplicates
+		
+		# Filter by project_sub_type if provided and role is consultant or mobiliser
+		if doc.project_sub_type and any(role_row.role in ["Consultant", "Mobiliser"] for role_row in doc.target_roles):
+			project_sub_types = [row.project_sub_type for row in doc.project_sub_type if row.project_sub_type]
+			if project_sub_types:
+				filtered_users = []
+				for user in users:
+					user_doc = frappe.get_doc("User", user)
+					if hasattr(user_doc, 'consultant_project_sub_type') and user_doc.consultant_project_sub_type:
+						if user_doc.consultant_project_sub_type in project_sub_types:
+							filtered_users.append(user)
+				users = filtered_users
 	
 	elif doc.target_type == "Specific Users":
 		users = [user_row.user for user_row in doc.target_users]
