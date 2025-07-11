@@ -39,15 +39,17 @@ def send_notification(doc):
 		if not tokens:
 			frappe.throw(_("No active FCM tokens found for target users"))
 		
-		# Send notification
-		firebase_client = get_firebase_client()
+
+		# Categorize Notification
 		notification_type = -1
 		if doc.notification_board_type == "Financial Board":
 			notification_type = 1
 		else:
 			notification_type = 2
+
+		# Send notification
+		firebase_client = get_firebase_client()
 		if len(tokens) == 1:
-			
 			result = firebase_client.send_single_notification(
 				token=tokens[0],
 				title=doc.notification_title,
