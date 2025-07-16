@@ -12,11 +12,9 @@
  "engine": "InnoDB",
  "field_order": [
   "notification_title",
-  "notification_board_type",
   "notification_body",
   "image_url",
   "target_type",
-  "project_sub_type",
   "target_roles",
   "target_users",
   "custom_filter",
@@ -130,27 +128,14 @@
   },
   {
    "fieldname": "image_url",
-   "fieldtype": "Data",
+   "fieldtype": "Attach Image",
    "label": "Image Url",
    "options": "URL"
-  },
-  {
-   "fieldname": "notification_board_type",
-   "fieldtype": "Select",
-   "label": "Notification Type",
-   "options": "\nFinancial Board\nInformation Board",
-   "reqd": 1
-  },
-  {
-   "fieldname": "project_sub_type",
-   "fieldtype": "Table",
-   "label": "Project Sub Type",
-   "options": "Project Sub Type Child"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-11 11:21:23.811062",
+ "modified": "2025-07-11 12:16:31.703247",
  "modified_by": "Administrator",
  "module": "Frappe FCM Notification",
  "name": "Push Notification Manager",

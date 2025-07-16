@@ -5,6 +5,7 @@ from frappe import _
 from frappe.utils import now_datetime
 from frappe.model.document import Document
 from frappe import whitelist
+from frappe_fcm_notification.frappe_fcm_notification.events.push_notification_events import send_notification as send_notification_event
 
 class PushNotificationManager(Document):
 	def validate(self):
@@ -55,20 +56,19 @@ class PushNotificationManager(Document):
 		return round((self.sent_count or 0) / total * 100, 2)
 
 @whitelist()
-def send_notification(doctype, name):
+def send_notification(doctype, name, data=None):
     doc = frappe.get_doc(doctype, name)
-    from frappe_fcm_notification.frappe_fcm_notification.events.push_notification_events import send_notification
-    send_notification(doc)
+    send_notification_event(doc, data)
 
 @whitelist()
-def retry_failed_notification(doctype, name):
+def retry_failed_notification(doctype, name, data=None):
 	"""Retry sending failed notification"""
 	doc = frappe.get_doc(doctype, name)
 	if doc.status == "Failed":
 		doc.status = "Draft"
 		doc.error_log = ""
 		doc.save()
-		send_notification(doctype, name)
+		send_notification_event(doc, data)
 	else:
 		frappe.throw(_("Only failed notifications can be retried"))
 

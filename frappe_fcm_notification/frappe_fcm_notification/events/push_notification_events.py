@@ -4,7 +4,7 @@ import frappe
 from frappe import _
 from frappe.utils import now_datetime
 from frappe_fcm_notification.frappe_fcm_notification.utils.firebase_client import get_firebase_client
-
+import json
 def on_update(doc, method):
 	"""Handle on_update event for Push Notification Manager"""
 	pass
@@ -24,11 +24,26 @@ def on_cancel(doc, method):
 		doc.status = "Cancelled"
 		doc.save()
 
-def send_notification(doc):
+def send_notification(doc, data=None):
 	"""Send the notification"""
 	try:
+		if data is None:
+			data = {}
+		elif isinstance(data, dict):
+			pass
+		elif isinstance(data, str):
+			try:
+				data = json.loads(data)
+			except json.JSONDecodeError:
+				frappe.throw(_("Data string is not valid JSON"))
+		else:
+			frappe.throw(_("Data must be a dictionary or JSON string"))
+
+
+
 		# Get target users
-		target_users = get_target_users(doc)
+		filters = data.pop("filters", [])
+		target_users = get_target_users(doc, filters)
 		
 		if not target_users:
 			frappe.throw(_("No target users found for this notification"))
@@ -38,14 +53,7 @@ def send_notification(doc):
 		
 		if not tokens:
 			frappe.throw(_("No active FCM tokens found for target users"))
-		
-
-		# Categorize Notification
-		notification_type = -1
-		if doc.notification_board_type == "Financial Board":
-			notification_type = 1
-		else:
-			notification_type = 2
+	
 
 		# Send notification
 		firebase_client = get_firebase_client()
@@ -54,11 +62,7 @@ def send_notification(doc):
 				token=tokens[0],
 				title=doc.notification_title,
 				body=doc.notification_body,
-				data={"name": doc.name,
-						"subject": doc.notification_title,
-						"message": doc.notification_body,
-						"type": str(notification_type)
-						},
+				data=data,
 				image_url=doc.image_url,
 			)
 		else:
@@ -66,13 +70,12 @@ def send_notification(doc):
 				tokens=tokens,
 				title=doc.notification_title,
 				body=doc.notification_body,
-				data={"name": doc.name,
-						"subject": doc.notification_title,
-						"message": doc.notification_body,
-						"type": str(notification_type)
-						},
+				data=data,
 				image_url=doc.image_url,
 			)
+			print("Result", result)
+			print("Data", data)
+
 		
 
 		# Update notification status
@@ -96,7 +99,7 @@ def send_notification(doc):
 		doc.save()
 		frappe.log_error(f"Error sending notification {doc.name}: {str(e)}")
 
-def get_target_users(doc):
+def get_target_users(doc, filters=None):
 	"""Get target users based on notification settings"""
 	users = []
 	
@@ -111,19 +114,14 @@ def get_target_users(doc):
 				filters={"role": role_row.role, "parenttype": "User"},
 				pluck="parent"
 			))
-		users = list(set(role_users))  # Remove duplicates
 		
-		# Filter by project_sub_type if provided and role is consultant or mobiliser
-		if doc.project_sub_type and any(role_row.role in ["Consultant", "Mobiliser"] for role_row in doc.target_roles):
-			project_sub_types = [row.project_sub_type for row in doc.project_sub_type if row.project_sub_type]
-			if project_sub_types:
-				filtered_users = []
-				for user in users:
-					user_doc = frappe.get_doc("User", user)
-					if hasattr(user_doc, 'consultant_project_sub_type') and user_doc.consultant_project_sub_type:
-						if user_doc.consultant_project_sub_type in project_sub_types:
-							filtered_users.append(user)
-				users = filtered_users
+		users = list(set(role_users))
+		if users:
+			filters.append(("name", "in", users))
+			users = frappe.get_all("User", filters=filters, pluck="name")
+		
+		print("Users", users)
+		
 	
 	elif doc.target_type == "Specific Users":
 		users = [user_row.user for user_row in doc.target_users]

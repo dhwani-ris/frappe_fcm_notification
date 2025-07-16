@@ -112,6 +112,7 @@ class FirebaseClient:
 	def send_multicast_notification(self, tokens, title, body, data=None, image_url=None):
 		"""Send notification to multiple devices"""
 		try:
+			print("Data", data)
 			message = messaging.MulticastMessage(
 				notification=messaging.Notification(
 					title=title,
