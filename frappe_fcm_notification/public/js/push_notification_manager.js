@@ -9,7 +9,12 @@ frappe.ui.form.on('Push Notification Manager', {
 					method: 'send_notification',
 					args: {
 						doctype: frm.doc.doctype,
-						name: frm.doc.name
+						name: frm.doc.name,
+						data: JSON.stringify({
+							"name": frm.doc.name,
+							"subject": frm.doc.notification_title,
+							"message": frm.doc.notification_body
+						})
 					},
 					callback: function(r) {
 						if (r.exc) {
@@ -31,7 +36,12 @@ frappe.ui.form.on('Push Notification Manager', {
 					method: 'retry_failed_notification',
 					args: {
 						doctype: frm.doc.doctype,
-						name: frm.doc.name
+						name: frm.doc.name,	
+						data: JSON.stringify({
+							"name": frm.doc.name,
+							"subject": frm.doc.notification_title,
+							"message": frm.doc.notification_body
+						})
 					},
 					callback: function(r) {
 						if (r.exc) {

@@ -128,14 +128,14 @@
   },
   {
    "fieldname": "image_url",
-   "fieldtype": "Data",
+   "fieldtype": "Attach Image",
    "label": "Image Url",
    "options": "URL"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-10 13:15:42.879277",
+ "modified": "2025-07-11 12:16:31.703247",
  "modified_by": "Administrator",
  "module": "Frappe FCM Notification",
  "name": "Push Notification Manager",
